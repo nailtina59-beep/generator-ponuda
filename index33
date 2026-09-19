@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Generator ponuda | Izradite ponudu online</title>
+    <title>Generator ponuda</title>
 
     <style>
         * {
@@ -14,35 +14,34 @@
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            color: #111827;
+            background: #f5f7fa;
+            color: #172033;
         }
 
         header {
-            background: #111827;
+            background: #172033;
             color: white;
-            padding: 35px 20px;
+            padding: 45px 20px;
             text-align: center;
         }
 
         header h1 {
-            margin: 0 0 10px;
-            font-size: 34px;
+            margin: 0;
+            font-size: 38px;
         }
 
         header p {
-            margin: 0;
-            color: #d1d5db;
-            font-size: 17px;
+            margin-top: 10px;
+            color: #cbd5e1;
         }
 
-        .container {
-            max-width: 1000px;
+        main {
+            max-width: 900px;
             margin: 35px auto;
             padding: 0 20px;
         }
 
-        .card {
+        .box {
             background: white;
             padding: 25px;
             margin-bottom: 20px;
@@ -52,35 +51,30 @@
 
         h2 {
             margin-top: 0;
-            margin-bottom: 20px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
         }
 
         input {
             width: 100%;
             padding: 13px;
-            border: 1px solid #d1d5db;
-            border-radius: 9px;
+            margin-bottom: 12px;
+            border: 1px solid #d5d9e0;
+            border-radius: 8px;
             font-size: 15px;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #2563eb;
+        .row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
         }
 
         button {
             border: none;
             padding: 13px 18px;
-            border-radius: 9px;
+            border-radius: 8px;
             cursor: pointer;
-            font-size: 15px;
             font-weight: bold;
+            font-size: 15px;
         }
 
         .add {
@@ -88,77 +82,61 @@
             color: white;
         }
 
-        .add:hover {
-            background: #1d4ed8;
-        }
-
-        .generate {
-            background: #111827;
-            color: white;
+        .create {
             width: 100%;
-            margin-top: 20px;
+            background: #172033;
+            color: white;
             font-size: 17px;
         }
 
-        .generate:hover {
-            background: #000000;
-        }
-
-        .item {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .remove {
+        .delete {
             background: #ef4444;
             color: white;
         }
 
-        .remove:hover {
-            background: #dc2626;
-        }
-
-        #preview {
+        #offer {
             display: none;
         }
 
-        .preview-box {
-            border: 1px solid #e5e7eb;
-            padding: 25px;
-            border-radius: 10px;
-            background: #fafafa;
+        .offer-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
         }
 
-        .preview-row {
-            padding: 10px 0;
-            border-bottom: 1px solid #e5e7eb;
+        .offer-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #ddd;
         }
 
         .total {
             text-align: right;
-            font-size: 26px;
+            font-size: 25px;
             font-weight: bold;
             margin-top: 25px;
         }
 
-        .success {
-            display: none;
-            background: #dcfce7;
-            color: #166534;
-            padding: 15px;
-            border-radius: 9px;
-            margin-bottom: 20px;
+        @media(max-width: 700px) {
+
+            .row {
+                grid-template-columns: 1fr;
+            }
+
+            .offer-header {
+                display: block;
+            }
+
+            header h1 {
+                font-size: 30px;
+            }
         }
 
         @media print {
 
             header,
-            .form-section,
-            .generate,
-            .add,
-            .remove {
+            .input-area,
+            .print-button {
                 display: none !important;
             }
 
@@ -166,33 +144,17 @@
                 background: white;
             }
 
-            .container {
+            main {
                 max-width: 100%;
                 margin: 0;
             }
 
-            .card {
-                box-shadow: none;
-                border: none;
-            }
-
-            #preview {
+            #offer {
                 display: block !important;
             }
-        }
 
-        @media (max-width: 700px) {
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .item {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 27px;
+            .box {
+                box-shadow: none;
             }
         }
     </style>
@@ -202,379 +164,238 @@
 
 <header>
     <h1>Generator ponuda</h1>
-    <p>Izradite profesionalnu ponudu u nekoliko minuta.</p>
+    <p>Izradite profesionalnu ponudu u nekoliko klikova.</p>
 </header>
 
-<div class="container">
+<main>
 
-    <div id="success" class="success">
-        Ponuda je uspješno izrađena.
-    </div>
+    <div class="box input-area">
 
-    <!-- PODACI FIRME -->
+        <h2>Podaci vaše firme</h2>
 
-    <div class="card form-section">
-
-        <h2>1. Podaci o vašoj firmi</h2>
-
-        <div class="grid">
-
-            <input
-                id="company"
-                type="text"
-                placeholder="Naziv firme"
-            >
-
-            <input
-                id="companyAddress"
-                type="text"
-                placeholder="Adresa"
-            >
-
-            <input
-                id="companyPhone"
-                type="text"
-                placeholder="Telefon"
-            >
-
-            <input
-                id="companyEmail"
-                type="email"
-                placeholder="E-mail"
-            >
-
-        </div>
+        <input id="firma" placeholder="Naziv firme">
+        <input id="adresa" placeholder="Adresa">
+        <input id="telefon" placeholder="Telefon">
+        <input id="email" placeholder="E-mail">
 
     </div>
 
 
-    <!-- PODACI KLIJENTA -->
+    <div class="box input-area">
 
-    <div class="card form-section">
+        <h2>Podaci klijenta</h2>
 
-        <h2>2. Podaci o klijentu</h2>
-
-        <div class="grid">
-
-            <input
-                id="client"
-                type="text"
-                placeholder="Ime / naziv klijenta"
-            >
-
-            <input
-                id="clientAddress"
-                type="text"
-                placeholder="Adresa klijenta"
-            >
-
-        </div>
+        <input id="klijent" placeholder="Ime / naziv klijenta">
+        <input id="klijentAdresa" placeholder="Adresa klijenta">
 
     </div>
 
 
-    <!-- STAVKE -->
+    <div class="box input-area">
 
-    <div class="card form-section">
+        <h2>Usluge i proizvodi</h2>
 
-        <h2>3. Usluge / proizvodi</h2>
+        <div id="stavke"></div>
 
-        <div id="items"></div>
-
-        <button class="add" onclick="addItem()">
+        <button class="add" onclick="dodajStavku()">
             + Dodaj stavku
         </button>
 
     </div>
 
 
-    <!-- IZRADITI PONUDU -->
+    <div class="box input-area">
 
-    <div class="card form-section">
-
-        <button class="generate" onclick="generateOffer()">
-            Izradi ponudu
+        <button class="create" onclick="napraviPonudu()">
+            IZRADi PONUDU
         </button>
 
     </div>
 
 
-    <!-- PREGLED -->
+    <div class="box" id="offer">
 
-    <div class="card" id="preview">
+        <div class="offer-header">
 
-        <h2>Pregled ponude</h2>
+            <div>
+                <h2 id="oFirma">Naziv firme</h2>
+                <p id="oAdresa"></p>
+                <p id="oTelefon"></p>
+                <p id="oEmail"></p>
+            </div>
 
-        <div class="preview-box">
-
-            <h3 id="previewCompany">
-                Naziv firme
-            </h3>
-
-            <p id="previewCompanyAddress"></p>
-            <p id="previewCompanyPhone"></p>
-            <p id="previewCompanyEmail"></p>
-
-            <hr>
-
-            <h3>Klijent</h3>
-
-            <p id="previewClient"></p>
-            <p id="previewClientAddress"></p>
-
-            <hr>
-
-            <h3>Usluge / proizvodi</h3>
-
-            <div id="previewItems"></div>
-
-            <div class="total">
-                Ukupno:
-                <span id="total">0.00 €</span>
+            <div>
+                <strong>PONUDA</strong>
+                <p id="datum"></p>
             </div>
 
         </div>
 
+        <hr>
+
+        <h3>Klijent</h3>
+
+        <p id="oKlijent"></p>
+        <p id="oKlijentAdresa"></p>
+
+        <hr>
+
+        <h3>Stavke</h3>
+
+        <div id="oStavke"></div>
+
+        <div class="total">
+            UKUPNO: <span id="ukupno">0.00 €</span>
+        </div>
+
+        <br>
+
         <button
-            class="generate"
-            onclick="window.print()"
-        >
+            class="create print-button"
+            onclick="window.print()">
             Ispis / Spremi kao PDF
         </button>
 
     </div>
 
-</div>
+</main>
 
 
 <script>
 
-let itemCount = 0;
+let brojStavki = 0;
 
 
-/* DODAVANJE STAVKE */
+function dodajStavku() {
 
-function addItem() {
+    brojStavki++;
 
-    itemCount++;
+    const stavka = document.createElement("div");
 
-    const items =
-        document.getElementById("items");
+    stavka.className = "row";
 
-    const div =
-        document.createElement("div");
+    stavka.id = "stavka-" + brojStavki;
 
-    div.className = "item";
-
-    div.id = "item-" + itemCount;
-
-    div.innerHTML = `
-
-        <input
-            class="item-name"
-            type="text"
-            placeholder="Naziv usluge / proizvoda"
-        >
-
-        <input
-            class="item-quantity"
-            type="number"
-            value="1"
-            min="1"
-            placeholder="Količina"
-        >
-
-        <input
-            class="item-price"
-            type="number"
-            value="0"
-            min="0"
-            step="0.01"
-            placeholder="Cijena €"
-        >
+    stavka.innerHTML = `
+        <input class="naziv" placeholder="Naziv usluge">
+        <input class="kolicina" type="number" value="1" min="1">
+        <input class="cijena" type="number" value="0" min="0" step="0.01">
 
         <button
-            class="remove"
-            onclick="removeItem(${itemCount})"
-        >
+            class="delete"
+            onclick="obrisiStavku(${brojStavki})">
             X
         </button>
-
     `;
 
-    items.appendChild(div);
+    document.getElementById("stavke").appendChild(stavka);
 }
 
 
-/* BRISANJE STAVKE */
+function obrisiStavku(id) {
 
-function removeItem(id) {
+    const stavka =
+        document.getElementById("stavka-" + id);
 
-    const item =
-        document.getElementById("item-" + id);
-
-    if (item) {
-        item.remove();
+    if (stavka) {
+        stavka.remove();
     }
 }
 
 
-/* IZRADa PONUDE */
+function napraviPonudu() {
 
-function generateOffer() {
+    document.getElementById("oFirma").textContent =
+        document.getElementById("firma").value || "Naziv firme";
 
-    const company =
-        document.getElementById("company").value;
+    document.getElementById("oAdresa").textContent =
+        document.getElementById("adresa").value;
 
-    const companyAddress =
-        document.getElementById("companyAddress").value;
+    document.getElementById("oTelefon").textContent =
+        document.getElementById("telefon").value;
 
-    const companyPhone =
-        document.getElementById("companyPhone").value;
+    document.getElementById("oEmail").textContent =
+        document.getElementById("email").value;
 
-    const companyEmail =
-        document.getElementById("companyEmail").value;
+    document.getElementById("oKlijent").textContent =
+        document.getElementById("klijent").value || "Klijent";
 
-    const client =
-        document.getElementById("client").value;
-
-    const clientAddress =
-        document.getElementById("clientAddress").value;
+    document.getElementById("oKlijentAdresa").textContent =
+        document.getElementById("klijentAdresa").value;
 
 
-    document.getElementById(
-        "previewCompany"
-    ).textContent =
-        company || "Naziv firme";
+    const nazivi =
+        document.querySelectorAll(".naziv");
+
+    const kolicine =
+        document.querySelectorAll(".kolicina");
+
+    const cijene =
+        document.querySelectorAll(".cijena");
+
+    const rezultat =
+        document.getElementById("oStavke");
+
+    rezultat.innerHTML = "";
+
+    let ukupno = 0;
 
 
-    document.getElementById(
-        "previewCompanyAddress"
-    ).textContent =
-        companyAddress;
+    for (let i = 0; i < nazivi.length; i++) {
+
+        const naziv =
+            nazivi[i].value || "Usluga";
+
+        const kolicina =
+            Number(kolicine[i].value) || 0;
+
+        const cijena =
+            Number(cijene[i].value) || 0;
+
+        const iznos =
+            kolicina * cijena;
+
+        ukupno += iznos;
 
 
-    document.getElementById(
-        "previewCompanyPhone"
-    ).textContent =
-        companyPhone;
-
-
-    document.getElementById(
-        "previewCompanyEmail"
-    ).textContent =
-        companyEmail;
-
-
-    document.getElementById(
-        "previewClient"
-    ).textContent =
-        client || "Nije uneseno";
-
-
-    document.getElementById(
-        "previewClientAddress"
-    ).textContent =
-        clientAddress;
-
-
-    const names =
-        document.querySelectorAll(".item-name");
-
-    const quantities =
-        document.querySelectorAll(".item-quantity");
-
-    const prices =
-        document.querySelectorAll(".item-price");
-
-
-    const previewItems =
-        document.getElementById("previewItems");
-
-
-    previewItems.innerHTML = "";
-
-
-    let total = 0;
-
-
-    for (
-        let i = 0;
-        i < names.length;
-        i++
-    ) {
-
-        const name =
-            names[i].value ||
-            "Stavka";
-
-
-        const quantity =
-            Number(
-                quantities[i].value
-            ) || 0;
-
-
-        const price =
-            Number(
-                prices[i].value
-            ) || 0;
-
-
-        const subtotal =
-            quantity * price;
-
-
-        total += subtotal;
-
-
-        const row =
+        const red =
             document.createElement("div");
 
+        red.className = "offer-item";
 
-        row.className =
-            "preview-row";
+        red.textContent =
+            naziv +
+            " — " +
+            kolicina +
+            " × " +
+            cijena.toFixed(2) +
+            " € = " +
+            iznos.toFixed(2) +
+            " €";
 
-
-        row.textContent =
-            `${name} — ${quantity} × ${price.toFixed(2)} € = ${subtotal.toFixed(2)} €`;
-
-
-        previewItems.appendChild(row);
+        rezultat.appendChild(red);
     }
 
 
-    document.getElementById(
-        "total"
-    ).textContent =
-        total.toFixed(2) + " €";
+    document.getElementById("ukupno").textContent =
+        ukupno.toFixed(2) + " €";
 
 
-    document.getElementById(
-        "preview"
-    ).style.display =
+    document.getElementById("datum").textContent =
+        new Date().toLocaleDateString("hr-HR");
+
+
+    document.getElementById("offer").style.display =
         "block";
 
 
-    document.getElementById(
-        "success"
-    ).style.display =
-        "block";
-
-
-    window.scrollTo({
-        top: document.getElementById(
-            "preview"
-        ).offsetTop - 20,
-
+    document.getElementById("offer").scrollIntoView({
         behavior: "smooth"
     });
 }
 
 
-/* PRVA STAVKA */
-
-addItem();
+dodajStavku();
 
 </script>
 
