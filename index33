@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator ponuda | Izradite ponudu online</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 35px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 10px;
+            font-size: 34px;
+        }
+
+        header p {
+            margin: 0;
+            color: #d1d5db;
+            font-size: 17px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 35px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 9px;
+            font-size: 15px;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #2563eb;
+        }
+
+        button {
+            border: none;
+            padding: 13px 18px;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .add {
+            background: #2563eb;
+            color: white;
+        }
+
+        .add:hover {
+            background: #1d4ed8;
+        }
+
+        .generate {
+            background: #111827;
+            color: white;
+            width: 100%;
+            margin-top: 20px;
+            font-size: 17px;
+        }
+
+        .generate:hover {
+            background: #000000;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .remove {
+            background: #ef4444;
+            color: white;
+        }
+
+        .remove:hover {
+            background: #dc2626;
+        }
+
+        #preview {
+            display: none;
+        }
+
+        .preview-box {
+            border: 1px solid #e5e7eb;
+            padding: 25px;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .preview-row {
+            padding: 10px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 25px;
+        }
+
+        .success {
+            display: none;
+            background: #dcfce7;
+            color: #166534;
+            padding: 15px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+        }
+
+        @media print {
+
+            header,
+            .form-section,
+            .generate,
+            .add,
+            .remove {
+                display: none !important;
+            }
+
+            body {
+                background: white;
+            }
+
+            .container {
+                max-width: 100%;
+                margin: 0;
+            }
+
+            .card {
+                box-shadow: none;
+                border: none;
+            }
+
+            #preview {
+                display: block !important;
+            }
+        }
+
+        @media (max-width: 700px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .item {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 27px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Generator ponuda</h1>
+    <p>Izradite profesionalnu ponudu u nekoliko minuta.</p>
+</header>
+
+<div class="container">
+
+    <div id="success" class="success">
+        Ponuda je uspješno izrađena.
+    </div>
+
+    <!-- PODACI FIRME -->
+
+    <div class="card form-section">
+
+        <h2>1. Podaci o vašoj firmi</h2>
+
+        <div class="grid">
+
+            <input
+                id="company"
+                type="text"
+                placeholder="Naziv firme"
+            >
+
+            <input
+                id="companyAddress"
+                type="text"
+                placeholder="Adresa"
+            >
+
+            <input
+                id="companyPhone"
+                type="text"
+                placeholder="Telefon"
+            >
+
+            <input
+                id="companyEmail"
+                type="email"
+                placeholder="E-mail"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- PODACI KLIJENTA -->
+
+    <div class="card form-section">
+
+        <h2>2. Podaci o klijentu</h2>
+
+        <div class="grid">
+
+            <input
+                id="client"
+                type="text"
+                placeholder="Ime / naziv klijenta"
+            >
+
+            <input
+                id="clientAddress"
+                type="text"
+                placeholder="Adresa klijenta"
+            >
+
+        </div>
+
+    </div>
+
+
+    <!-- STAVKE -->
+
+    <div class="card form-section">
+
+        <h2>3. Usluge / proizvodi</h2>
+
+        <div id="items"></div>
+
+        <button class="add" onclick="addItem()">
+            + Dodaj stavku
+        </button>
+
+    </div>
+
+
+    <!-- IZRADITI PONUDU -->
+
+    <div class="card form-section">
+
+        <button class="generate" onclick="generateOffer()">
+            Izradi ponudu
+        </button>
+
+    </div>
+
+
+    <!-- PREGLED -->
+
+    <div class="card" id="preview">
+
+        <h2>Pregled ponude</h2>
+
+        <div class="preview-box">
+
+            <h3 id="previewCompany">
+                Naziv firme
+            </h3>
+
+            <p id="previewCompanyAddress"></p>
+            <p id="previewCompanyPhone"></p>
+            <p id="previewCompanyEmail"></p>
+
+            <hr>
+
+            <h3>Klijent</h3>
+
+            <p id="previewClient"></p>
+            <p id="previewClientAddress"></p>
+
+            <hr>
+
+            <h3>Usluge / proizvodi</h3>
+
+            <div id="previewItems"></div>
+
+            <div class="total">
+                Ukupno:
+                <span id="total">0.00 €</span>
+            </div>
+
+        </div>
+
+        <button
+            class="generate"
+            onclick="window.print()"
+        >
+            Ispis / Spremi kao PDF
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let itemCount = 0;
+
+
+/* DODAVANJE STAVKE */
+
+function addItem() {
+
+    itemCount++;
+
+    const items =
+        document.getElementById("items");
+
+    const div =
+        document.createElement("div");
+
+    div.className = "item";
+
+    div.id = "item-" + itemCount;
+
+    div.innerHTML = `
+
+        <input
+            class="item-name"
+            type="text"
+            placeholder="Naziv usluge / proizvoda"
+        >
+
+        <input
+            class="item-quantity"
+            type="number"
+            value="1"
+            min="1"
+            placeholder="Količina"
+        >
+
+        <input
+            class="item-price"
+            type="number"
+            value="0"
+            min="0"
+            step="0.01"
+            placeholder="Cijena €"
+        >
+
+        <button
+            class="remove"
+            onclick="removeItem(${itemCount})"
+        >
+            X
+        </button>
+
+    `;
+
+    items.appendChild(div);
+}
+
+
+/* BRISANJE STAVKE */
+
+function removeItem(id) {
+
+    const item =
+        document.getElementById("item-" + id);
+
+    if (item) {
+        item.remove();
+    }
+}
+
+
+/* IZRADa PONUDE */
+
+function generateOffer() {
+
+    const company =
+        document.getElementById("company").value;
+
+    const companyAddress =
+        document.getElementById("companyAddress").value;
+
+    const companyPhone =
+        document.getElementById("companyPhone").value;
+
+    const companyEmail =
+        document.getElementById("companyEmail").value;
+
+    const client =
+        document.getElementById("client").value;
+
+    const clientAddress =
+        document.getElementById("clientAddress").value;
+
+
+    document.getElementById(
+        "previewCompany"
+    ).textContent =
+        company || "Naziv firme";
+
+
+    document.getElementById(
+        "previewCompanyAddress"
+    ).textContent =
+        companyAddress;
+
+
+    document.getElementById(
+        "previewCompanyPhone"
+    ).textContent =
+        companyPhone;
+
+
+    document.getElementById(
+        "previewCompanyEmail"
+    ).textContent =
+        companyEmail;
+
+
+    document.getElementById(
+        "previewClient"
+    ).textContent =
+        client || "Nije uneseno";
+
+
+    document.getElementById(
+        "previewClientAddress"
+    ).textContent =
+        clientAddress;
+
+
+    const names =
+        document.querySelectorAll(".item-name");
+
+    const quantities =
+        document.querySelectorAll(".item-quantity");
+
+    const prices =
+        document.querySelectorAll(".item-price");
+
+
+    const previewItems =
+        document.getElementById("previewItems");
+
+
+    previewItems.innerHTML = "";
+
+
+    let total = 0;
+
+
+    for (
+        let i = 0;
+        i < names.length;
+        i++
+    ) {
+
+        const name =
+            names[i].value ||
+            "Stavka";
+
+
+        const quantity =
+            Number(
+                quantities[i].value
+            ) || 0;
+
+
+        const price =
+            Number(
+                prices[i].value
+            ) || 0;
+
+
+        const subtotal =
+            quantity * price;
+
+
+        total += subtotal;
+
+
+        const row =
+            document.createElement("div");
+
+
+        row.className =
+            "preview-row";
+
+
+        row.textContent =
+            `${name} — ${quantity} × ${price.toFixed(2)} € = ${subtotal.toFixed(2)} €`;
+
+
+        previewItems.appendChild(row);
+    }
+
+
+    document.getElementById(
+        "total"
+    ).textContent =
+        total.toFixed(2) + " €";
+
+
+    document.getElementById(
+        "preview"
+    ).style.display =
+        "block";
+
+
+    document.getElementById(
+        "success"
+    ).style.display =
+        "block";
+
+
+    window.scrollTo({
+        top: document.getElementById(
+            "preview"
+        ).offsetTop - 20,
+
+        behavior: "smooth"
+    });
+}
+
+
+/* PRVA STAVKA */
+
+addItem();
+
+</script>
+
+</body>
+</html>
