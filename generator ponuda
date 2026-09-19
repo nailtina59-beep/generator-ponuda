@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Generator ponuda</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            color: #1f2937;
+        }
+
+        header {
+            background: #111827;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 8px;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 0;
+            color: #d1d5db;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .add {
+            background: #2563eb;
+            color: white;
+        }
+
+        .generate {
+            background: #111827;
+            color: white;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 17px;
+        }
+
+        .item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .remove {
+            background: #ef4444;
+            color: white;
+        }
+
+        #preview {
+            display: none;
+        }
+
+        .total {
+            text-align: right;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 700px) {
+            .grid,
+            .item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Generator ponuda</h1>
+    <p>Izradite profesionalnu ponudu u nekoliko minuta.</p>
+</header>
+
+<div class="container">
+
+    <div class="card">
+        <h2>Podaci o vašoj firmi</h2>
+
+        <div class="grid">
+            <input id="company" placeholder="Naziv firme">
+            <input id="companyAddress" placeholder="Adresa">
+            <input id="companyPhone" placeholder="Telefon">
+            <input id="companyEmail" placeholder="E-mail">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Podaci o klijentu</h2>
+
+        <div class="grid">
+            <input id="client" placeholder="Ime / naziv klijenta">
+            <input id="clientAddress" placeholder="Adresa klijenta">
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Usluge / proizvodi</h2>
+
+        <div id="items"></div>
+
+        <button class="add" onclick="addItem()">+ Dodaj stavku</button>
+    </div>
+
+    <div class="card">
+        <h2>Pregled ponude</h2>
+
+        <div id="preview">
+            <p><strong>Firma:</strong> <span id="previewCompany"></span></p>
+            <p><strong>Klijent:</strong> <span id="previewClient"></span></p>
+
+            <hr>
+
+            <div id="previewItems"></div>
+
+            <div class="total">
+                Ukupno: <span id="total">0.00 €</span>
+            </div>
+
+            <button class="generate" onclick="window.print()">
+                🖨️ Ispis / Spremi kao PDF
+            </button>
+        </div>
+
+        <button class="generate" onclick="generateOffer()">
+            Izradi ponudu
+        </button>
+    </div>
+
+</div>
+
+<script>
+    let itemCount = 0;
+
+    function addItem() {
+        itemCount++;
+
+        const items = document.getElementById("items");
+
+        const div = document.createElement("div");
+        div.className = "item";
+        div.id = "item-" + itemCount;
+
+        div.innerHTML = `
+            <input class="item-name" placeholder="Naziv usluge / proizvoda">
+            <input class="item-quantity" type="number" value="1" min="1" placeholder="Količina">
+            <input class="item-price" type="number" value="0" min="0" step="0.01" placeholder="Cijena €">
+            <button class="remove" onclick="removeItem(${itemCount})">X</button>
+        `;
+
+        items.appendChild(div);
+    }
+
+    function removeItem(id) {
+        const item = document.getElementById("item-" + id);
+
+        if (item) {
+            item.remove();
+        }
+    }
+
+    function generateOffer() {
+
+        document.getElementById("preview").style.display = "block";
+
+        const company = document.getElementById("company").value;
+        const client = document.getElementById("client").value;
+
+        document.getElementById("previewCompany").textContent =
+            company || "Nije uneseno";
+
+        document.getElementById("previewClient").textContent =
+            client || "Nije uneseno";
+
+        const names = document.querySelectorAll(".item-name");
+        const quantities = document.querySelectorAll(".item-quantity");
+        const prices = document.querySelectorAll(".item-price");
+
+        const previewItems = document.getElementById("previewItems");
+
+        previewItems.innerHTML = "";
+
+        let total = 0;
+
+        for (let i = 0; i < names.length; i++) {
+
+            const name = names[i].value || "Stavka";
+            const quantity = Number(quantities[i].value) || 0;
+            const price = Number(prices[i].value) || 0;
+
+            const subtotal = quantity * price;
+
+            total += subtotal;
+
+            const row = document.createElement("p");
+
+            row.textContent =
+                `${name} — ${quantity} × ${price.toFixed(2)} € = ${subtotal.toFixed(2)} €`;
+
+            previewItems.appendChild(row);
+        }
+
+        document.getElementById("total").textContent =
+            total.toFixed(2) + " €";
+    }
+
+    addItem();
+</script>
+
+</body>
+</html>
